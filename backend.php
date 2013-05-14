@@ -1,15 +1,19 @@
 <?php
+error_reporting(E_ALL);
+ini_set('display_errors', '1');
+include 'httpful-0.2.0.phar';
 $url = "http://api.dev.sipgate.net";
 
 $handler = array(
-	'extension' => array(
-		'url' => '/my/settings/extensions/',
-		'version' => '2.41'
+	'numbers' => array(
+		'url' => '/my/settings/numbers/outgoing/',
+		'version' => '2.42',
+		'method' => 'get'
 	)
 );
 
-#$post = $_POST;
-$post = $_GET;
+$post = $_POST;
+//$post = $_GET;
 if(!isset($post) || count($post) < 1)
 {
 	die("Method not allowed");
@@ -29,27 +33,22 @@ if(!isset($post['action']) || $post['action'] == "")
 	die("Action not specified");
 }
 
-if(!isset($post['params']) || $post['params'] == "")
+$url .= $handler[$post['action']]['url'];
+
+if(isset($post['params']) && is_array($post['params']))
 {
-	die("Params not specified");
+	$url .= '/' . http_build_query($post['params']);
 }
 
-$ch = curl_init();
-curl_setopt($ch, CURLOPT_URL, $url . $handler['extension']['url']);
-#curl_setopt($ch, CURLOPT_POST, 0);
-#curl_setopt($ch, CURLOPT_POST, 1);
-#curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($post['params']));
-curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-curl_setopt($ch, CURLOPT_USERPWD, $post['username'] .":" . $post['password']);
-curl_setopt($ch, CURLOPT_HTTPAUTH, CURLAUTH_BASIC);
-curl_setopt($ch, CURLOPT_HTTPHEADER, array('Accept: application/json'));
-$result = curl_exec($ch);
-$info = curl_getinfo($ch);
-curl_close($ch);
+$method = $handler[$post['action']]['method'];
+$response = \Httpful\Request::$method($url)
+	->mime(\Httpful\Mime::JSON)
+	->withoutAutoParsing()
+	->authenticateWith($post['username'], $post['password'])
+    ->send();
 
-
-echo "result:";
-var_dump($result);
-
-echo "info:";
-var_dump($info);
+header("HTTP/1.1 " . $response->code);
+if($response->code == 200) {
+	header("Content-Type: application/json");
+	echo $response->body;
+}
