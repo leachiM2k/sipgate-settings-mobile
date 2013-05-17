@@ -2,15 +2,7 @@
 error_reporting(E_ALL);
 ini_set('display_errors', '1');
 include 'httpful-0.2.0.phar';
-$url = "http://api.dev.sipgate.net";
-
-$handler = array(
-	'numbers' => array(
-		'url' => '/my/settings/numbers/outgoing/',
-		'version' => '2.42',
-		'method' => 'get'
-	)
-);
+$url = "https://api.sipgate.net";
 
 $post = $_POST;
 //$post = $_GET;
@@ -18,7 +10,14 @@ if(!isset($post) || count($post) < 1)
 {
 	die("Method not allowed");
 }
-
+if(!isset($post['method']) || !in_array($post['method'], array('get','post','put','delete')))
+{
+	die("method not specified");
+}
+if(!isset($post['url']) || $post['url'] == "")
+{
+	die("url not specified");
+}
 if(!isset($post['username']) || $post['username'] == "")
 {
 	die("Username not specified");
@@ -28,19 +27,9 @@ if(!isset($post['password']) || $post['password'] == "")
 	die("Password not specified");
 }
 
-if(!isset($post['action']) || $post['action'] == "")
-{
-	die("Action not specified");
-}
+$url .= $post['url'];
 
-$url .= $handler[$post['action']]['url'];
-
-if(isset($post['params']) && is_array($post['params']))
-{
-	$url .= '/' . http_build_query($post['params']);
-}
-
-$method = $handler[$post['action']]['method'];
+$method =  $post['method'];
 $response = \Httpful\Request::$method($url)
 	->mime(\Httpful\Mime::JSON)
 	->withoutAutoParsing()

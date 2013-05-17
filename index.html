@@ -1,138 +1,103 @@
 <!DOCTYPE html>
 <html>
 <head>
+	<meta charset="utf-8">
 	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta name="viewport" content="initial-scale=1.0, user-scalable=no">
+	<meta name="apple-mobile-web-app-capable" content="yes">
+	<meta name="apple-mobile-web-app-status-bar-style" content="black">
+  	
 	<title>sipgate</title>
-	<link href="bootstrap/css/bootstrap.min.css" rel="stylesheet" media="screen">
-<style type="text/css">
-#outgoingNumber,
-#options,
-.loginbox {
-	  max-width: 300px;
-        padding: 19px 29px 29px;
-        margin: 0 auto 20px;
-        background-color: #fff;
-        border: 1px solid #e5e5e5;
-        -webkit-border-radius: 5px;
-           -moz-border-radius: 5px;
-                border-radius: 5px;
-        -webkit-box-shadow: 0 1px 2px rgba(0,0,0,.05);
-           -moz-box-shadow: 0 1px 2px rgba(0,0,0,.05);
-                box-shadow: 0 1px 2px rgba(0,0,0,.05);
-}	
-
-#footer {
-	height: 60px;
-	width: 100%;
-	line-height: 60px;
-	text-align: center;
-	background-color: gray;
-	position: fixed;
-	bottom: 0;
-}
-
-#footer a {
-	color: white;
-}
-
-.hidden {
-	display: none;
-	visibility: hidden;
-}
-
-</style>
-
+	
+	<link rel="stylesheet" href="http://code.jquery.com/mobile/1.3.1/jquery.mobile-1.3.1.min.css" />
+	<link rel="stylesheet" href="styles/application.css" />
+	<link rel="stylesheet" href="styles/sipgate.css" />
+	<script src="http://code.jquery.com/jquery-1.9.1.min.js"></script>
+	<script src="scripts/application.js"></script>
+	<script src="http://code.jquery.com/mobile/1.3.1/jquery.mobile-1.3.1.min.js"></script>
+		
 </head>
 <body>
-    <script src="http://code.jquery.com/jquery.js"></script>
-    <script src="bootstrap/js/bootstrap.min.js"></script>
-    <script type="text/javascript">
-var page = {
-	username: null,
-	password: null,
 
-	init: function() {
-		this.displayBox('login');
-		this.bindLoginButton();
-		this.bindOptionMenu();
-	},
-	
-	displayBox: function(box) {
-	    $('.box').each(function(index,boxElement) {
-	    	$(boxElement).addClass('hidden');
-	    });
-	    
-	    $('#' + box).removeClass("hidden");
-	},
-	
-	bindLoginButton: function() {
-		$('#standardlogin').submit(jQuery.proxy(function() {
-			this.displayBox('options');
-			return false;
-		}, this));		
-	},
-	
-	bindOptionMenu: function() {
-		$('.openOption').click(jQuery.proxy(function(e) {
-			e.preventDefault();
-			var optionElement = e.target;
-			var optionName = $(optionElement).attr('href');
-			var optionNameMatched = optionName.match(/^#(.*)/);
-			if(optionNameMatched == null) {
-				return;
-			}
-			this.displayBox(optionNameMatched[1]);
-			
-		}, this));
-	}	
-};
 
-$(document).ready(function () {
-	page.init();
-});
-	</script>
-<div id="login" class="hidden box">
-	<div class="loginbox">
-		<a href="http://www.sipgate.de" target="_blank" tabindex="4">
-			<img src="logo.gif" title="sipgate logo" id="sipgatelogo" width="161px" height="41px" />
-		</a>
-		<form action="" method="post" id="standardlogin">
-			<label translation="username" for="username">E-Mail:</label>
-			<input class="formelement" type="text" name="username" id="username" tabindex="1"><br>
-			<label translation="password" for="password">Passwort:</label>
-			<input class="formelement" type="password" name="password" id="password" tabindex="2">
-			<button class="btn btn-warning btn-large">Jetzt einloggen!</button>
+<div data-role="page"  id="login">
+	<div id="header" data-role="header" data-position="fixed">
+		<h1>Login</h1>
+	</div>
+	<div class="loginbox" data-role="content">
+		<div style="text-align: center;">
+			<a href="http://www.sipgate.de" target="_blank" tabindex="4">
+				<img src="logo.gif" title="sipgate logo" id="sipgatelogo" width="161px" height="41px"/>
+			</a>
+		</div>
+		
+		<form id="standardlogin">
+			<ul data-role="listview" data-inset="true">
+				<li data-role="fieldcontain">
+					<label translation="username" for="username">E-Mail:</label>
+					<input class="formelement" type="text" name="username" id="username" tabindex="1" data-clear-btn="true"><br>
+				</li>
+				<li data-role="fieldcontain">
+					<label translation="password" for="password">Passwort:</label>
+					<input class="formelement" type="password" name="password" id="password" tabindex="2" data-clear-btn="true">
+				</li>
+				<li data-role="fieldcontain">
+					<label for="password"></label>
+					<button type="submit" data-theme="b">Jetzt einloggen!</button>
+				</li>
+			</ul>
 		</form>
+	</div>
+	<div data-role="footer" data-position="fixed">
+		<a href="#">Impressum</a>
 	</div>
 </div>
 
-<div id="options" class="hidden box">
-	<h2>Optionen</h2>
-	<ul>
-		<li><a href="#outgoingNumber" class="openOption">Absenderrufnummer setzen</a></li>
-	</ul>
+<div id="options" data-role="page">
+	<div id="header" data-role="header" data-position="fixed">
+		<h2>Optionen</h2>
+	</div>
+	<div data-role="content">
+		<ul data-role="listview" data-inset="true">
+			<li><div id="balance"></div></li>
+			<li><a href="#outgoingNumber" class="openOption">Absenderrufnummer setzen</a></li>
+		</ul>
+	</div>
+	<div data-role="footer" data-position="fixed">
+		<a href="#">Impressum</a>
+	</div>
 </div>
 
-<div id="outgoingNumber" class="hidden box">
-
-	<h2>Absenderrufnummer setzen</h2>
-	
-	<h3>gilt für: <select><option>Foo</option></select></h3>
-	
-	<dl>
-		<dt>Rufnummern</dt>
-		<dd><select><option>Foo</option></select></dd>
-		<dt>eigene Rufnummer</dt>
-		<dd><input type="text" name="ownNumber" placeholder="Rufnummer"></dd>
-		<dt>Unterdrücken</dt>
-		<dd><label><input type="checkbox" name="clir" value="clir"> Keine Rufnummer übermitteln</label></dd>
-	</dl>
-
+<div id="outgoingNumber" data-role="page">
+	<div id="header" data-role="header" data-position="fixed">
+		<h2>Absenderrufnummer setzen</h2>
+	</div>
+	<div data-role="content">
+		<form>
+			 <ul data-role="listview" data-inset="true" data-divider-theme="d" id="outgoingNumberSettingsList">
+				<li data-role="fieldcontain">
+		            <label for="outgoingNumberExtensionSelect">gilt für</label>
+		            <select id="outgoingNumberExtensionSelect"><option>Foo</option></select>
+	        	</li>
+	        	<li data-role="list-divider" class="outgoingNumbersSettings">aktuelle Absenderrufnummerneinstellung</li>
+				<li data-role="fieldcontain" class="outgoingNumbersSettings">
+					<label><input type="checkbox" name="clir" value="clir" id="outgoingNumberClirCheckbox"> Keine Rufnummer übermitteln</label>
+	        	</li>
+				<li data-role="fieldcontain" class="withClip">
+		            <label for="outgoingNumberNumberSelect">Rufnummer</label>
+		            <select id="outgoingNumberNumberSelect"><option>Foo</option></select>
+	        	</li>
+				<li data-role="fieldcontain" class="withClip outgoingNumberOwnNumber">
+		            <label for="outgoingNumberOwnNumberInput">eigene Rufnummer</label>
+		            <input id="outgoingNumberOwnNumberInput" type="text" name="ownNumber" placeholder="Rufnummer" data-clear-btn="true">
+	        	</li>
+			</ul>
+		</form>
+	</div>	
+	<div data-role="footer" data-position="fixed">
+		<a href="#">Impressum</a>
+	</div>
 </div>
-
-
-<div id="footer"><a href="#">Impressum</a></div>
 
 </body>
 </html>
