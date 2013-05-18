@@ -10,8 +10,8 @@ var page = {
 		this.bindOptionMenu();
 		this.bindOutgoingNumberExtensionSelect();
 		this.bindOutgoingNumberClirCheckbox();
-		this.bindOutgoingNumberOwnNumberInput();
 		this.bindOutgoingNumberNumberSelect();
+		this.bindOutgoingNumberSaveButton();
 	},
 	
 	displayBox: function(box) {
@@ -55,6 +55,7 @@ var page = {
 	
 	bindOutgoingNumberClirCheckbox: function() {
 		$('#outgoingNumberClirCheckbox').change(jQuery.proxy(function(e) {
+			$('.outgoingNumberSave').show();
 			var chosenExtensionId = $('#outgoingNumberExtensionSelect').val();
 			if(this.outgoingNumberSettings[chosenExtensionId]) {
 				this.outgoingNumberSettings[chosenExtensionId].clip = !$('#outgoingNumberClirCheckbox').prop('checked');
@@ -62,15 +63,10 @@ var page = {
 			this.setOutgoingNumberSettings(chosenExtensionId);
 		}, this));
 	},
-	
-	bindOutgoingNumberOwnNumberInput: function() {
-		$('#outgoingNumberClirCheckbox').change(jQuery.proxy(function(e) {
-			$('#outgoingNumberNumberSelect').val("own").selectmenu( "refresh" );
-		}, this));
-	},
-	
+		
 	bindOutgoingNumberNumberSelect: function() {
 		$('#outgoingNumberNumberSelect').change(jQuery.proxy(function(e) {
+			$('.outgoingNumberSave').show();
 			var chosenNumber = e.target.value;
 			if(chosenNumber == "own") {
 				$('#outgoingNumberSettingsList .outgoingNumberOwnNumber').fadeIn();
@@ -78,6 +74,28 @@ var page = {
 				$('#outgoingNumberSettingsList .outgoingNumberOwnNumber').fadeOut();
 				$('#outgoingNumberOwnNumberInput').val("");
 			} 
+		}, this));
+	},
+	
+	bindOutgoingNumberSaveButton: function() {
+		$('#outgoingNumberSaveButton').click(jQuery.proxy(function(e) {
+			e.preventDefault();
+			
+			var params = {
+				extensionId: $('#outgoingNumberExtensionSelect').val(),
+				clip: !$('#outgoingNumberClirCheckbox').prop('checked'),
+				number: $('#outgoingNumberNumberSelect').val()
+			};
+			
+			if(params.number == "own") {
+				params.number = $('#outgoingNumberOwnNumberInput').val();
+			} else {
+				params.number = 'tel:' + params.number;
+			}
+			
+			var url = '/my/settings/numbers/outgoing/?'+ $.param(params);
+			this.request('post',url, jQuery.proxy(this.outgoingNumberSetResult, this), jQuery.proxy(this.errorHandling, this));
+			
 		}, this));
 	},
 	
@@ -125,6 +143,12 @@ var page = {
 		this.displayBox('outgoingNumber');
 	},
 	
+	outgoingNumberSetResult: function(data, a ,b) {
+		console.log(data);
+		console.log(a);
+		console.log(b);
+	},
+	
 	numbersListResult: function(data) {
 		if(data.phonenumbers)
 		{
@@ -134,7 +158,7 @@ var page = {
 			$('<option/>').val("").text("Bitte wählen...").appendTo('#outgoingNumberNumberSelect');
 			$('<option/>').val("own").text("Eigene Rufnummer").appendTo('#outgoingNumberNumberSelect');
 			$.each(this.accountNumbers, function(key, number) {
-				$('<option/>').val(number).text(number).appendTo('#outgoingNumberNumberSelect');
+				$('<option/>').val(number).text('+'+number).appendTo('#outgoingNumberNumberSelect');
 			});
 		}
 	},
@@ -150,6 +174,8 @@ var page = {
 		if(state == "error" && errorObject.status == 401)
 		{
 			alert("Die eingegebenen Benutzerdaten sind falsch. Bitte überprüfen Sie Ihre Eingaben.");	
+		} else {
+			alert("Ein unbekannter Fehler ist aufgetreten:\n" + errorText);
 		}
 	},
 	request: function(method, url, callback, callbackError)

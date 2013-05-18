@@ -33,18 +33,9 @@
 		
 		<form id="standardlogin">
 			<ul data-role="listview" data-inset="true">
-				<li data-role="fieldcontain">
-					<label translation="username" for="username">E-Mail:</label>
-					<input class="formelement" type="text" name="username" id="username" tabindex="1" data-clear-btn="true"><br>
-				</li>
-				<li data-role="fieldcontain">
-					<label translation="password" for="password">Passwort:</label>
-					<input class="formelement" type="password" name="password" id="password" tabindex="2" data-clear-btn="true">
-				</li>
-				<li data-role="fieldcontain">
-					<label for="password"></label>
-					<button type="submit" data-theme="b">Jetzt einloggen!</button>
-				</li>
+				<li><input class="formelement" type="text" name="username" id="username" placeholder="E-Mail" tabindex="1" data-clear-btn="true"></li>
+				<li><input class="formelement" type="password" name="password" id="password" placeholder="Passwort" tabindex="2" data-clear-btn="true"></li>
+				<li><button type="submit" data-theme="b">Jetzt einloggen!</button></li>
 			</ul>
 		</form>
 	</div>
@@ -90,6 +81,9 @@
 				<li data-role="fieldcontain" class="withClip outgoingNumberOwnNumber">
 		            <label for="outgoingNumberOwnNumberInput">eigene Rufnummer</label>
 		            <input id="outgoingNumberOwnNumberInput" type="text" name="ownNumber" placeholder="Rufnummer" data-clear-btn="true">
+	        	</li>
+	        	<li class="outgoingNumberSave" style="display: none">
+	        		<button id="outgoingNumberSaveButton" type="submit" data-theme="b" data-icon="check">Speichern</button>
 	        	</li>
 			</ul>
 		</form>
