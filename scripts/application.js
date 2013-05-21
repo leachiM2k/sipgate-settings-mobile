@@ -126,6 +126,10 @@ var page = {
 		{
 			this.request('get','/my/settings/numbers/outgoing/', jQuery.proxy(this.outgoingNumberResult, this), jQuery.proxy(this.errorHandling, this));
 		}
+		if(clickedOn == "doNotDisturb")
+		{
+			this.request('get','/my/settings/numbers/outgoing/', jQuery.proxy(this.dndResult, this), jQuery.proxy(this.errorHandling, this));
+		}
 	},
 
 	outgoingNumberResult: function(data) {
@@ -142,7 +146,7 @@ var page = {
 		
 		this.displayBox('outgoingNumber');
 	},
-	
+
 	outgoingNumberSetResult: function(data, a ,b) {
 		console.log(data);
 		console.log(a);
@@ -167,6 +171,45 @@ var page = {
 		$('#balance').text("Ihr aktuelles Guthaben: " + data.balance.totalIncludingVat.toFixed(2) + ' ' + data.balance.currency);
 		this.request('get', '/my/settings/numbers/list/', jQuery.proxy(this.numbersListResult, this), jQuery.proxy(this.errorHandling, this));
 		this.displayBox('options');
+	},
+	
+	dndResult: function(data) {
+		$('#doNotDisturbExtensionsList li').remove();
+		$.each(data.outgoingNumber.extension, jQuery.proxy(function(key, extensionSetting) {
+			if(typeof(extensionSetting.extension.alias) == "undefined") return;
+			var slider = this.dndResultCreateNewLineWithSlider("#doNotDisturbExtensionsList", extensionSetting.extension.id, extensionSetting.extension.alias, "false");
+			this.dndSliderAddEvent(slider);
+		},this));
+		
+		this.displayBox('doNotDisturb');
+	},
+	
+	dndResultCreateNewLineWithSlider: function(appendTo, extensionId, extensionName, state) {
+		if(typeof(extensionName) == "undefined") return;
+		var id = 'doNotDisturbExtensionsListLine_'+extensionId;
+		var line = $('<li data-role="fieldcontain"></li>').appendTo( appendTo );
+		$('<label for="'+id+'">'+extensionName+'</label>').appendTo( line );
+		var sliderHTML = '<select name="'+id+'" id="'+id+'" data-extensionId="'+extensionId+'" data-role="slider" data-track-theme="a">';
+		sliderHTML += '<option value="false" '+(state=="false" ? 'selected="selected"' : '')+'>Aus</option>';
+		sliderHTML += '<option value="true" '+(state=="true" ? 'selected="selected"' : '')+'>An</option>';
+		sliderHTML += '</select>';
+		return $(sliderHTML).appendTo(line);
+	},
+	
+	dndSliderAddEvent: function(slider) {
+		slider.on( "slidestop", jQuery.proxy(function(event) {
+			var extensionId = $(event.target).data('extensionid');
+			var value = $(event.target).val();
+			// console.log("Switch DND for " + extensionId + " to " + value);
+			var url = '/my/settings/extensions/'+extensionId+'/dnd/?value='+value;
+			this.request('post',url, jQuery.proxy(this.dndSetResult, this), jQuery.proxy(this.errorHandling, this));
+		}, this));
+	},
+	
+	dndSetResult: function(data, a ,b) {
+		console.log(data);
+		console.log(a);
+		console.log(b);
 	},
 	
 	errorHandling: function(errorObject, state, errorText)
