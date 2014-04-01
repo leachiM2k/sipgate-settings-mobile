@@ -19,10 +19,18 @@ var page = {
 	},
 	
 	bindLoginButton: function() {
+
+    if(localStorage.getItem('mobileSettingsUsername') != null)
+    {
+      $('#username').val(localStorage.getItem('mobileSettingsUsername'));
+    }
+
 		$('#standardlogin').submit(jQuery.proxy(function() {
 			
 			this.username = $('#username').val();
 			this.password = $('#password').val();
+
+      localStorage.setItem('mobileSettingsUsername', this.username);
 			
 			this.request('get','/my/billing/balance/', jQuery.proxy(this.loginResult, this), jQuery.proxy(this.errorHandling, this));
 			
@@ -130,7 +138,21 @@ var page = {
 		{
 			this.request('get','/my/settings/numbers/outgoing/', jQuery.proxy(this.dndResult, this), jQuery.proxy(this.errorHandling, this));
 		}
+    if(clickedOn == "contacts")
+    {
+			this.siterequest('foo','bla', jQuery.proxy(this.internalContactsResult, this), jQuery.proxy(this.errorHandling, this));
+    }
 	},
+
+  internalContactsResult: function(data) {
+		$('#internalContactsList li').remove();
+    $.each(data, function(key, contact) {
+      if(typeof(contact.alias) == "undefined") return;
+  		var line = $('<li data-icon="false"></li>').appendTo( $('#internalContactsList') );
+	  	$('<a href="tel:'+contact.directDialCode+'">'+contact.alias+' (-'+contact.directDialCode+')</a>').appendTo( line );
+    });
+		this.displayBox('contacts');
+  },
 
 	outgoingNumberResult: function(data) {
 		this.outgoingNumberSettings = {};
@@ -235,7 +257,24 @@ var page = {
 			success: callback,
 			error: callbackError
 		});
+	},
+	siterequest: function(method, url, callback, callbackError)
+	{
+		$.ajax({
+			type: 'POST',
+			url: 'sitescraper.php',
+			data: {
+				url: url,
+				username: this.username,
+				password: this.password,
+				method: method
+			},
+			success: callback,
+			error: callbackError
+		});
 	}
+
+
 };
 
 jQuery(document).on("mobileinit", function(){

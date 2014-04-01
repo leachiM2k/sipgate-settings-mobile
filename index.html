@@ -51,6 +51,7 @@
 	<div data-role="content">
 		<ul data-role="listview" data-inset="true">
 			<li><div id="balance"></div></li>
+			<li><a href="#contacts" class="openOption">Interne Kontakte</a></li>
 			<li><a href="#outgoingNumber" class="openOption">Absenderrufnummer setzen</a></li>
 			<li><a href="#doNotDisturb" class="openOption">Bitte nicht stören (DND)</a></li>
 		</ul>
@@ -58,6 +59,22 @@
 	<div data-role="footer" data-position="fixed">
 		<a href="#impressum" data-rel="dialog" data-transition="slidedown">Impressum</a>
 	</div>
+</div>
+
+<div id="contacts" data-role="page">
+ 	<div id="header" data-role="header" data-position="fixed">
+    <h2>Interne Kontakte</h2>
+	</div>
+	<div data-role="content">
+		<div id="internalContacts">
+			<ul data-role="listview" data-inset="true" data-autodividers="true" data-filter="true" id="internalContactsList">
+			</ul>
+		</div>
+	</div>
+	<div data-role="footer" data-position="fixed">
+		<a href="#impressum" data-rel="dialog" data-transition="slidedown">Impressum</a>
+	</div>
+ 
 </div>
 
 <div id="doNotDisturb"  data-role="page">
